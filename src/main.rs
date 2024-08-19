@@ -25,10 +25,34 @@ fn main() {
         .load_render_texture(&thread, IMG_WIDTH as u32, IMG_HEIGHT as u32)
         .expect("Render Texture fail:(");
 
+    let mut mos_pos = Vector2::new(0., 0.);
+    let mut window_pos = Vector2::new(
+        rl.get_screen_width() as f32 / 2.,
+        rl.get_screen_height() as f32 / 2.,
+    );
+    let mut pan_offset = Vector2::new(0., 0.);
+    let mut dragged = false;
+
     let mut animate_fps = 0.;
     let mut animate_frame = 0;
     while !rl.window_should_close() {
         // rl.set_window_position(window_pos.x as i32, window_pos.y as i32);
+
+        let curr_mos = rl.get_mouse_position();
+        if rl.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) {
+            dragged = true;
+            pan_offset = curr_mos;
+        }
+
+        if dragged {
+            window_pos += curr_mos - pan_offset;
+            rl.set_window_position(window_pos.x as i32, window_pos.y as i32);
+
+            if rl.is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT) {
+                dragged = false;
+            }
+        }
+
         let mut d = rl.begin_drawing(&thread);
         animate_fps += 1.;
 
