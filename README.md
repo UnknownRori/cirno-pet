@@ -41,7 +41,7 @@ The current usage is simple, just click over the cirno.
 |    OS     |   Windows, Linux, MacOs          |   Windows 90000000 |
 |    CPU    |   1.0 Ghz                        |   5000.0Ghz |
 |    RAM    |   200 Mb                         |   10000 Gb  |
-|    GPU    |    1 Gb                          |   50000.0 Gb|
+|    GPU    |    128 Mb                        |   50000.0 Gb|
 |  Graphics | Hardware accelerated OpenGL (1.1)| OpenGL (555)|
 | Sound Card|   Any                            | Sound Card That Makes The Music Sound Like A Live Orchestra Even Though It's Not |
 
