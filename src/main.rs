@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 use cirno_pet::{ImgBuilderInfo, VirtualPetBuilder};
 
 fn main() {
