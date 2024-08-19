@@ -38,6 +38,14 @@ jobs:
       - name: Setup Cache
         uses: Swatinem/rust-cache@v2
 
+      - name: Install Dependency
+        shell: bash
+        run: |
+          if [[ "${{ matrix.runner }}" == "ubuntu-latest" ]]; then
+            sudo apt-get install libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev
+          fi
+           
+
       # TODO : Move this on seperate workflow
       - name: Check before build
         run: cargo check
