@@ -1,0 +1,78 @@
+name: Build
+on: [push]
+env:
+  # The project name specified in your Cargo.toml
+  PROJECT_NAME: cirno-pet
+jobs:
+  build:
+    # Set the job to run on the platform specified by the matrix below
+    runs-on: ${{ matrix.runner }}
+ 
+    # Define the build matrix for cross-compilation
+    strategy:
+      matrix:
+        include:
+          - name: linux-amd64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - name: win-amd64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: macos-amd64
+            runner: macos-latest
+            target: x86_64-apple-darwin
+          - name: macos-arm64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+ 
+    # The steps to run for each matrix item
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+ 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "${{ matrix.target }}"
+ 
+      - name: Setup Cache
+        uses: Swatinem/rust-cache@v2
+
+      # TODO : Move this on seperate workflow
+      - name: Check before build
+        run: cargo check
+ 
+      - name: Build Binary
+        run: cargo build --verbose --locked --release --target ${{ matrix.target }}
+
+      - name: Create dist folder
+        run: mkdir dist
+
+      - name: Copy assets
+        run: cp -r ./assets ./dist
+        
+      - name: Release Binary
+        shell: bash
+        run: |
+          BIN_SUFFIX=""
+          if [[ "${{ matrix.runner }}" == "windows-latest" ]]; then
+            BIN_SUFFIX=".exe"
+          fi
+
+          if [[ "${{ matrix.name }}" == "wasm32-unknown-unknown" ]]; then
+            cp -r ./js ./dist
+            BIN_SUFFIX=".wasm"
+          fi
+ 
+          # The built binary output location
+          BIN_OUTPUT="target/${{ matrix.target }}/release/${PROJECT_NAME}${BIN_SUFFIX}"
+ 
+          BIN_RELEASE="${PROJECT_NAME}-${{ matrix.name }}${BIN_SUFFIX}"
+ 
+          mv "${BIN_OUTPUT}" "./dist/${BIN_RELEASE}"
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.0
+        with:
+          name: ${{ matrix.name }}-artifact
+          path: ./dist
