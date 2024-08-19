@@ -6,6 +6,8 @@ pub struct VirtualPetBuilder {
     vsync: bool,
     // Show red background where the window is
     show_hitbox: bool,
+    // Title of the app
+    title: String,
     // How much the window refreshes
     fps: u32,
     // How much the animation frame wait
@@ -181,6 +183,11 @@ impl VirtualPetBuilder {
         self
     }
 
+    pub fn title(mut self, title: &str) -> Self {
+        self.title = String::from(title);
+        self
+    }
+
     pub fn show_hitbox(mut self) -> Self {
         self.show_hitbox = true;
         self
@@ -213,7 +220,7 @@ impl VirtualPetBuilder {
                 self.img.info.width_slice as i32,
                 self.img.info.height_slice as i32,
             )
-            .title("Virtual Pet")
+            .title(&self.title)
             .undecorated()
             .transparent();
 

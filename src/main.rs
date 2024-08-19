@@ -4,6 +4,7 @@ use cirno_pet::{ImgBuilderInfo, VirtualPetBuilder};
 fn main() {
     let mut pet = VirtualPetBuilder::new()
         .vsync()
+        .title("Cirno Virtual Pet")
         // .show_hitbox()
         .animation_fps(5)
         .fps(60)
