@@ -71,8 +71,6 @@ impl ImgBuilderInfo {
 
 #[derive(Default, Debug)]
 pub struct ImgInfo {
-    // width: u32,
-    // height: u32,
     idle_row: u32,
     move_row: u32,
     width_slice: u32,
@@ -222,6 +220,7 @@ impl VirtualPetBuilder {
             )
             .title(&self.title)
             .undecorated()
+            .resizable() // Are you sure?? I have no idea
             .transparent();
 
         if self.vsync {
@@ -286,6 +285,26 @@ impl VirtualPet {
                 self.dragged = false;
             }
         }
+
+        if self.rl.get_mouse_wheel_move() > 0. {
+            self.rl.set_window_size(
+                self.rl.get_screen_width() + 10,
+                self.rl.get_screen_height() + 10,
+            );
+        } else if self.rl.get_mouse_wheel_move() < 0. && self.rl.get_screen_width() > 100 {
+            self.rl.set_window_size(
+                self.rl.get_screen_width() - 10,
+                self.rl.get_screen_height() - 10,
+            );
+        } else if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_MIDDLE)
+        {
+            self.rl.set_window_size(
+                self.animation.info.width_slice as i32,
+                self.animation.info.height_slice as i32,
+            );
+        }
     }
 
     fn draw(&mut self) {
@@ -300,11 +319,23 @@ impl VirtualPet {
             self.animation.draw(&mut d, &self.thread, self.dragged);
         }
 
-        d.draw_texture_ex(
+        // TODO : Refactor this to something cleaner
+        d.draw_texture_pro(
             &self.animation.render_texture,
+            Rectangle::new(
+                0.,
+                0.,
+                self.animation.info.width_slice as f32,
+                self.animation.info.height_slice as f32,
+            ),
+            Rectangle::new(
+                0.,
+                0.,
+                d.get_screen_width() as f32,
+                d.get_screen_height() as f32,
+            ),
             Vector2::new(0., 0.),
             0.,
-            1.,
             Color::WHITE,
         );
     }
